@@ -2,10 +2,11 @@ import express from "express";
 import logger from "morgan";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-// import bodyParser from "body-parser";
+import cors from "cors";
 import MainRouter from "./routes/main.js";
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(logger("dev"));

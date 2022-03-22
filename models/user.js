@@ -24,9 +24,9 @@ const userSchema = new mongoose.Schema(
 );
 
 userSchema.virtual("notes", {
-  ref: "notes",
+  ref: "Note",
   localField: "_id",
-  foreignField: "owner",
+  foreignField: "userId",
 });
 
 userSchema.methods.generateAccessToken = async function () {
@@ -55,9 +55,11 @@ userSchema.statics.findUserByPasswordAndUsername = async function (
 
 userSchema.pre("save", async function (next) {
   const user = this;
+  console.log(user.password);
   if (user.isModified("password")) {
     user.password = await bcrypt.hash(user.password, 8);
   }
+  console.log(user.password);
   next();
 });
 
