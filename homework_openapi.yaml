@@ -1,0 +1,481 @@
+swagger: "2.0"
+info:
+  description: "Homework description"
+  version: "1.0.0"
+  title: "LAB FE 14 NodeJS HW #2"
+  termsOfService: "http://swagger.io/terms/"
+  contact:
+    email: "Kyrylo_Yezhov@epam.com"
+host: "localhost:8080"
+basePath: "/"
+tags:
+- name: "User"
+  description: "Everything about your User"
+  externalDocs:
+    description: "Find out more"
+    url: "http://swagger.io"
+- name: "Notes"
+  description: "Access to Users notes"
+schemes:
+- "http"
+paths:
+  /api/users/me:
+    get:
+      tags:
+      - "User"
+      summary: "Get user's profile info"
+      description: "User can request only his own profile info"
+      operationId: "getProfileInfo"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "Success"
+          schema:
+            type: object
+            properties:
+              user:
+                $ref: '#/definitions/User'
+        "400":
+          description: "Bad request"
+          schema:
+            $ref: '#/definitions/Error'
+        "500":
+          description: "Internal server error"
+          schema:
+            $ref: '#/definitions/Error'
+      security:
+      - jwt_token: []
+    delete:
+      tags:
+      - "User"
+      summary: "Delete user's profile"
+      description: "User can delete only his own profile info"
+      operationId: "deleteProfile"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      responses:
+        "200":
+            description: "Success"
+            schema:
+                type: "object"
+                properties:
+                  message: 
+                    type: string
+                    example: "Success"
+        "400":
+          description: "Bad request"
+          schema:
+            $ref: '#/definitions/Error'
+        "500":
+          description: "Internal server error"
+          schema:
+            $ref: '#/definitions/Error'
+      security:
+      - jwt_token: []
+    patch:
+      tags:
+      - "User"
+      summary: "Change user's password"
+      description: "Change user's password"
+      operationId: "changeProfilePassword"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "new_password"
+        schema:
+          type: "object"
+          required:
+          - oldPassword
+          - newPassword
+          properties:
+            oldPassword:
+              type: string
+            newPassword:
+              type: string
+      responses:
+        "200":
+            description: "Success"
+            schema:
+                type: "object"
+                properties:
+                  message: 
+                    type: string
+                    example: "Success"
+        "400":
+          description: "Bad request"
+          schema:
+            $ref: '#/definitions/Error'
+        "500":
+          description: "Internal server error"
+          schema:
+            $ref: '#/definitions/Error'
+      security:
+      - jwt_token: []
+  /api/auth/register:
+    post:
+      tags:
+      - "Auth"
+      summary: "Register a new user"
+      description: "Create new profile"
+      operationId: "createProfile"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "credentials"
+        required: true
+        schema:
+          $ref: "#/definitions/Credentials"
+      responses:
+        "200":
+            description: "Success"
+            schema:
+                type: "object"
+                properties:
+                  message: 
+                    type: string
+                    example: "Success"
+        "400":
+          description: "Bad request"
+          schema:
+            $ref: '#/definitions/Error'
+        "500":
+          description: "Internal server error"
+          schema:
+            $ref: '#/definitions/Error'
+  /api/auth/login:
+    post:
+      tags:
+      - "Auth"
+      summary: "Login"
+      description: "Login into the system"
+      operationId: "login"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "credentials"
+        required: true
+        schema:
+          $ref: "#/definitions/Credentials"
+      responses:
+        "200":
+          description: "Success"
+          schema:
+            type: "object"
+            properties:
+              message: 
+                type: string
+                example: "Success"
+              jwt_token: 
+                type: string
+                example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0b3B0YWwuY29tIiwiZXhwIjoxNDI2NDIwODAwLCJodHRwOi8vdG9wdGFsLmNvbS9qd3RfY2xhaW1zL2lzX2FkbWluIjp0cnVlLCJjb21wYW55IjoiVG9wdGFsIiwiYXdlc29tZSI6dHJ1ZX0.yRQYnWzskCZUxPwaQupWkiUzKELZ49eM7oWxAQK_ZXw"
+        "400":
+          description: "Bad request"
+          schema:
+            $ref: '#/definitions/Error'
+        "500":
+          description: "Internal server error"
+          schema:
+            $ref: '#/definitions/Error'
+  /api/notes:
+    get:
+      tags:
+      - "Notes"
+      summary: "Get user's notes"
+      description: "Retrieve the list of notes for authorized user"
+      operationId: "getUserNotes"
+      parameters:
+        - in: query
+          name: offset
+          type: integer
+          description: The number of items to skip before starting to collect the result set.
+        - in: query
+          name: limit
+          type: integer
+          description: The numbers of items to return.
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "Success"
+          schema:
+            type: "object"
+            properties: 
+                offset:
+                  type: integer
+                limit:
+                  type: integer  
+                count:
+                  type: integer
+                  description: "Total notes value(for user)"
+                notes:
+                    type: array
+                    items:
+                        $ref: "#/definitions/Note"
+        "400":
+          description: "Bad request"
+          schema:
+            $ref: '#/definitions/Error'
+        "500":
+          description: "Internal server error"
+          schema:
+            $ref: '#/definitions/Error'
+      security:
+      - jwt_token: []
+    post:
+        tags:
+        - "Notes"
+        summary: "Add Note for User"
+        description: "Add Note for User"
+        operationId: "addUserNotes"
+        consumes:
+        - "application/json"
+        produces:
+        - "application/json"
+        parameters:
+        - in: "body"
+          name: "Note payload"
+          schema:
+            required:
+            - text
+            properties:
+              text:
+                type: "string"
+        responses:
+            "200":
+                description: "Success"
+                schema:
+                    type: "object"
+                    properties:
+                      message: 
+                        type: string
+                        example: "Success"
+            "400":
+                description: "Bad request"
+                schema:
+                    $ref: '#/definitions/Error'
+            "500":
+                description: "Internal server error"
+                schema:
+                    $ref: '#/definitions/Error'
+        security:
+        - jwt_token: []
+  /api/notes/{id}:
+    get:
+        tags:
+        - "Notes"
+        summary: "Get user's note by id"
+        description: "Get user's note by id"
+        operationId: "getUserNoteById"
+        consumes:
+        - "application/json"
+        produces:
+        - "application/json"
+        parameters:
+        - in: "path"
+          name: "id"
+          description: "Note's id"
+          required: true
+          type: string
+        responses:
+            "200":
+              description: "Success"
+              schema:
+                type: object
+                properties:
+                  note:
+                      $ref: '#/definitions/Note'
+            "400":
+              description: "Bad request"
+              schema:
+                  $ref: '#/definitions/Error'
+            "500":
+              description: "Internal server error"
+              schema:
+                  $ref: '#/definitions/Error'
+        security:
+        - jwt_token: []
+    put:
+        tags:
+        - "Notes"
+        summary: "Update user's note by id"
+        description: "Update user's note by id"
+        operationId: "updateUserNoteById"
+        consumes:
+        - "application/json"
+        produces:
+        - "application/json"
+        parameters:
+        - in: "path"
+          name: "id"
+          description: "Note's id"
+          required: true
+          type: string
+        - in: "body"
+          name: "Note payload"
+          schema:
+            required:
+            - text
+            properties:
+              text:
+                type: "string"
+        responses:
+            "200":
+                description: "Success"
+                schema:
+                    type: "object"
+                    properties:
+                      message: 
+                        type: string
+                        example: "Success"
+            "400":
+              description: "Bad request"
+              schema:
+                  $ref: '#/definitions/Error'
+            "500":
+              description: "Internal server error"
+              schema:
+                  $ref: '#/definitions/Error'
+        security:
+        - jwt_token: []
+    patch:
+        tags:
+        - "Notes"
+        summary: "Check/uncheck user's note by id"
+        description: "Check/uncheck user's note by id, value for completed field should be changed to opposite"
+        operationId: "toggleCompletedForUserNoteById"
+        consumes:
+        - "application/json"
+        produces:
+        - "application/json"
+        parameters:
+        - in: "path"
+          name: "id"
+          description: "Note's id"
+          required: true
+          type: string
+        responses:
+            "200":
+                description: "Success"
+                schema:
+                    type: "object"
+                    properties:
+                      message: 
+                        type: string
+                        example: "Success"
+            "400":
+              description: "Bad request"
+              schema:
+                  $ref: '#/definitions/Error'
+            "500":
+              description: "Internal server error"
+              schema:
+                  $ref: '#/definitions/Error'
+        security:
+        - jwt_token: []
+    delete:
+        tags:
+        - "Notes"
+        summary: "Delete user's note by id"
+        description: "Delete user's note by id"
+        operationId: "deleteUserNoteById"
+        consumes:
+        - "application/json"
+        produces:
+        - "application/json"
+        parameters:
+        - in: "path"
+          name: "id"
+          description: "Note's id"
+          required: true
+          type: string
+        responses:
+            "200":
+                description: "Success"
+                schema:
+                    type: "object"
+                    properties:
+                      message: 
+                        type: string
+                        example: "Success"
+            "400":
+              description: "Bad request"
+              schema:
+                  $ref: '#/definitions/Error'
+            "500":
+              description: "Internal server error"
+              schema:
+                  $ref: '#/definitions/Error'
+        security:
+        - jwt_token: []
+securityDefinitions:
+  jwt_token:
+    type: "apiKey"
+    name: "Authorization"
+    in: "header"
+definitions:
+  Error:
+    type: "object"
+    properties:
+      message:
+        type: "string"
+        description: "Error message"
+  Credentials:
+    type: "object"
+    properties:
+      username:
+        type: "string"
+        example: "Kyrylo"
+      password:
+        type: "string"
+        example: "ve518dl3"
+  User:
+    type: "object"
+    properties:
+      _id:
+        type: "string"
+        example: "5099803df3f4948bd2f98391"
+      username:
+        type: "string"
+        example: "Kyrylo"
+      createdDate:
+        type: "string"
+        format: "date"
+        example: "2020-10-28T08:03:19.814Z"
+  Note:
+    type: "object"
+    properties:
+      _id:
+        type: "string"
+        example: "5099803df3f4948bd2f98391"
+      userId:
+        type: "string"
+        example: "5099803df3f4948bd2f98391"
+      completed:
+        type: "boolean"
+        example: false
+      text: 
+        type: "string"
+        example: "Complete second homework"
+      createdDate:
+        type: "string"
+        format: "date"
+        example: "2020-10-28T08:03:19.814Z"
+externalDocs:
+  description: "Find out more about Swagger"
+  url: "http://swagger.io"
