@@ -35,6 +35,54 @@ notesRouter.post("/", auth, async (req, res) => {
     await note.save();
     return res.status(201).json({ success: true });
   } catch (e) {
+    return res.status(500).json({ message: e.message });
+  }
+});
+
+notesRouter.get("/:id", auth, async (req, res) => {
+  try {
+    const note = await Note.findOne({
+      _id: req.params.id,
+      userId: req.user._id,
+    });
+    if (!note) {
+      return res.status(400).json({ message: "Could not find note" });
+    }
+    return res.status(200).json({ note: note });
+  } catch (e) {
+    return res.status(500).json({ message: e.message });
+  }
+});
+
+notesRouter.patch("/:id", auth, async (req, res) => {
+  try {
+    const note = await Note.findOne({
+      _id: req.params.id,
+      userId: req.user._id,
+    });
+    if (!note) {
+      return res.status(400).json({ message: "Could not find note" });
+    }
+    note.completed = !note.completed;
+    await note.save();
+    return res.status(200).json({ message: "Success" });
+  } catch (e) {
+    return res.status(500).json({ message: e.message });
+  }
+});
+
+notesRouter.delete("/:id", auth, async (req, res) => {
+  try {
+    const note = await Note.findOne({
+      _id: req.params.id,
+      userId: req.user._id,
+    });
+    if (!note) {
+      return res.status(400).json({ message: "Could not find note" });
+    }
+    await note.delete();
+    res.status(200).json({ message: "Success" });
+  } catch (e) {
     res.status(500).json({ message: e.message });
   }
 });
