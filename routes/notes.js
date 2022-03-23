@@ -87,4 +87,27 @@ notesRouter.delete("/:id", auth, async (req, res) => {
   }
 });
 
+notesRouter.put("/:id", auth, async (req, res) => {
+  try {
+    if (!req.body.text) {
+      return res.status(400).json({ message: "Text is empty" });
+    }
+
+    const note = await Note.findOne({
+      _id: req.params.id,
+      userId: req.user._id,
+    });
+
+    if (!note) {
+      return res.status(400).json({ message: "Could not find note" });
+    }
+
+    note.text = req.body.text;
+    await note.save();
+    return res.status(200).json({ message: "Success" });
+  } catch (e) {
+    return res.status(500).json({ message: e.message });
+  }
+});
+
 export default notesRouter;
