@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import User from "../models/user.js";
 
 export const auth = async (req, res, next) => {
-  const token = req.body.token || req.header("Authorization");
+  const token = req.header("Authorization").split(" ")[1];
   if (!token) {
     return res
       .status(403)
